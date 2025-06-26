@@ -11,13 +11,24 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
-  directUrl = env("DIRECT_URL")
+}
+
+model Usuario {
+  id      Int      @id @default(autoincrement())
+  nome    String
+  email   String   @unique
+  senha   String
+  tarefas Tarefa[]
+
+  @@map("usuarios")
 }
 
 model Tarefa {
   id         Int      @id @default(autoincrement())
   texto      String
   created_at DateTime @default(now())
+  usuario_id    Int
+  user       Usuario  @relation(fields: [usuario_id], references: [id])
 
   @@map("tarefas")
 }
