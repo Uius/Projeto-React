@@ -17,18 +17,19 @@ export const metadata: Metadata = {
   description: "Uma lista de tarefas criada por William Felixs, com auxilio de IA",
 };
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+
+
+// opcional: app/layout.tsx
+import { redirect } from "next/navigation";
+
+export default function RootLayout({ children }: { children: React.ReactNode }) {
+  if (typeof window !== "undefined" && !localStorage.getItem("usuario")) {
+    redirect("/login");
+  }
+
   return (
-    <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        {children}
-      </body>
+    <html lang="pt-BR">
+      <body>{children}</body>
     </html>
   );
 }

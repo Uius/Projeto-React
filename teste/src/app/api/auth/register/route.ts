@@ -1,28 +1,26 @@
-import { NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
-import bcrypt from 'bcryptjs';
+// src/app/api/auth/register/route.ts
+import { NextResponse } from "next/server";
+import { hash } from "bcryptjs";
+import { prisma } from "@/lib/prisma";
 
 export async function POST(req: Request) {
-  const body = await req.json();
-  const { nome, email, senha } = body;
+  const { nome, email, senha } = await req.json();
 
   if (!nome || !email || !senha) {
-    return NextResponse.json({ erro: 'Campos obrigatórios não preenchidos.' }, { status: 400 });
+    return NextResponse.json({ erro: "Preencha todos os campos" }, { status: 400 });
   }
 
-  const senhaCriptografada = await bcrypt.hash(senha, 10);
+  const usuarioExistente = await prisma.usuario.findUnique({ where: { email } });
 
-  try {
-    const usuario = await prisma.usuario.create({
-      data: {
-        nome,
-        email,
-        senha: senhaCriptografada
-      }
-    });
-
-    return NextResponse.json({ ok: true, usuario });
-  } catch (error) {
-    return NextResponse.json({ erro: 'Erro ao registrar usuário.' }, { status: 500 });
+  if (usuarioExistente) {
+    return NextResponse.json({ erro: "E-mail já cadastrado" }, { status: 400 });
   }
+
+  const senhaHash = await hash(senha, 10);
+
+  const usuario = await prisma.usuario.create({
+    data: { nome, email, senha: senhaHash },
+  });
+
+  return NextResponse.json({ ok: true, usuario });
 }

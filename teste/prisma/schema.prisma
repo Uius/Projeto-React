@@ -4,6 +4,10 @@
 // Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
+// prisma/schema.prisma
+
+// prisma/schema.prisma
+
 generator client {
   provider = "prisma-client-js"
 }
@@ -18,6 +22,7 @@ model Usuario {
   nome    String
   email   String   @unique
   senha   String
+  createdAt DateTime @default(now())
   tarefas Tarefa[]
 
   @@map("usuarios")
@@ -27,8 +32,8 @@ model Tarefa {
   id         Int      @id @default(autoincrement())
   texto      String
   created_at DateTime @default(now())
-  usuario_id    Int
-  user       Usuario  @relation(fields: [usuario_id], references: [id])
+  usuario_id Int
+  usuario    Usuario  @relation(fields: [usuario_id], references: [id])
 
   @@map("tarefas")
 }
